@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>干系人管理系统</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-color: #0d1117;
+            --panel-bg: #161b22;
+            --border-color: #30363d;
+            --text-main: #c9d1d9;
+            --text-muted: #8b949e;
+            --primary: #58a6ff;
+            --primary-hover: #3182ce;
+            --danger: #f85149;
+            --success: #2ea043;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            margin: 0;
+            padding: 40px 20px;
+            line-height: 1.5;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-weight: 700;
+            font-size: 2.5rem;
+            background: linear-gradient(90deg, #58a6ff, #a371f7);
+            -webkit-background-clip: text;
+            /* stylelint-disable-next-line property-no-vendor-prefix */
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 10px;
+        }
+        
+        h2 {
+            font-size: 1.5rem;
+            margin-bottom: 20px;
+            color: #fff;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 10px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 30px;
+        }
+
+        @media (max-width: 900px) {
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .card {
+            background-color: var(--panel-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 24px;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.2);
+            transition: transform 0.2s ease;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: var(--text-main);
+            font-size: 0.9rem;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 10px 12px;
+            background-color: var(--bg-color);
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            color: var(--text-main);
+            font-family: inherit;
+            box-sizing: border-box;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(88, 166, 255, 0.3);
+        }
+
+        button {
+            display: inline-block;
+            background-color: var(--success);
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background-color 0.2s;
+            width: 100%;
+            font-size: 1rem;
+        }
+
+        button:hover {
+            background-color: #2c974b;
+        }
+
+        button.btn-danger {
+            background-color: transparent;
+            color: var(--danger);
+            border: 1px solid var(--danger);
+            padding: 6px 12px;
+            width: auto;
+            font-size: 0.85rem;
+        }
+
+        button.btn-danger:hover {
+            background-color: var(--danger);
+            color: #fff;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        th, td {
+            padding: 12px 16px;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        th {
+            background-color: rgba(255,255,255,0.05);
+            font-weight: 600;
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        tr:hover td {
+            background-color: rgba(255,255,255,0.02);
+        }
+
+        .badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .badge-c { background-color: rgba(248, 81, 73, 0.2); color: #ff7b72; border: 1px solid rgba(248, 81, 73, 0.4); }
+        .badge-d { background-color: rgba(46, 160, 67, 0.2); color: #3fb950; border: 1px solid rgba(46, 160, 67, 0.4); }
+
+        .matrix-cell {
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 15px;
+            font-size: 0.9rem;
+            align-items: center;
+        }
+        
+        .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: var(--text-muted);
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>干系人管理系统</h1>
+        <p style="color: var(--text-muted);">基于《信息系统项目管理师》第四版标准构建的参与度评估矩阵工具</p>
+    </header>
+
+    <div class="grid">
+        <!-- 左侧：添加干系人表单 -->
+        <div class="card">
+            <h2>添加新干系人</h2>
+            <form action="/add" method="POST">
+                <div class="form-group">
+                    <label for="name">干系人姓名</label>
+                    <input type="text" id="name" name="name" required placeholder="例如: 张三">
+                </div>
+                
+                <div class="form-group">
+                    <label for="role">角色描述</label>
+                    <input type="text" id="role" name="role" required placeholder="例如: 项目赞助人">
+                </div>
+
+                <div style="display: flex; gap: 15px;">
+                    <div class="form-group" style="flex: 1;">
+                        <label for="power">权力 (Power)</label>
+                        <select id="power" name="power">
+                            <option value="高">高</option>
+                            <option value="低">低</option>
+                        </select>
+                    </div>
+                    <div class="form-group" style="flex: 1;">
+                        <label for="interest">利益 (Interest)</label>
+                        <select id="interest" name="interest">
+                            <option value="高">高</option>
+                            <option value="低">低</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="current_eng">当前参与程度 (Current)</label>
+                    <select id="current_eng" name="current_eng">
+                        {% for level in levels %}
+                        <option value="{{ level }}">{{ level }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="desired_eng">期望参与程度 (Desired)</label>
+                    <select id="desired_eng" name="desired_eng">
+                        {% for level in levels %}
+                        <option value="{{ level }}" {% if level == '支持' %}selected{% endif %}>{{ level }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+
+                <button type="submit">保存干系人</button>
+            </form>
+        </div>
+
+        <!-- 右侧：干系人列表及矩阵 -->
+        <div>
+            <div class="card" style="margin-bottom: 30px;">
+                <h2>干系人参与度评估矩阵</h2>
+                <div class="legend">
+                    <strong>图例: </strong>
+                    <span class="badge badge-c">C = 当前参与程度</span>
+                    <span class="badge badge-d">D = 期望参与程度</span>
+                </div>
+                
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>干系人</th>
+                                {% for level in levels %}
+                                <th style="text-align: center;">{{ level }}</th>
+                                {% endfor %}
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if stakeholders %}
+                                {% for s in stakeholders %}
+                                <tr>
+                                    <td><strong>{{ s.name }}</strong> <br> <span style="font-size: 0.8rem; color: var(--text-muted);">{{ s.role }}</span></td>
+                                    {% for level in levels %}
+                                    <td class="matrix-cell">
+                                        {% if s.current_eng == level %}
+                                            <span class="badge badge-c">C</span>
+                                        {% endif %}
+                                        {% if s.desired_eng == level %}
+                                            <span class="badge badge-d">D</span>
+                                        {% endif %}
+                                    </td>
+                                    {% endfor %}
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="6" class="empty-state">暂无干系人数据。请在左侧添加。</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <div class="card">
+                <h2>干系人登记册 (权力/利益维度)</h2>
+                <div style="overflow-x: auto;">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>姓名</th>
+                                <th>角色</th>
+                                <th>权力</th>
+                                <th>利益</th>
+                                <th>操作</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% if stakeholders %}
+                                {% for s in stakeholders %}
+                                <tr>
+                                    <td>{{ s.name }}</td>
+                                    <td>{{ s.role }}</td>
+                                    <td>
+                                        <span style="color: {% if s.power == '高' %}#ff7b72{% else %}#8b949e{% endif %}; font-weight: 600;">{{ s.power }}</span>
+                                    </td>
+                                    <td>
+                                        <span style="color: {% if s.interest == '高' %}#3fb950{% else %}#8b949e{% endif %}; font-weight: 600;">{{ s.interest }}</span>
+                                    </td>
+                                    <td>
+                                        <form action="/delete/{{ s.id }}" method="POST" style="margin: 0;">
+                                            <button type="submit" class="btn-danger">删除</button>
+                                        </form>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            {% else %}
+                                <tr>
+                                    <td colspan="5" class="empty-state">暂无记录</td>
+                                </tr>
+                            {% endif %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+</body>
+</html>
